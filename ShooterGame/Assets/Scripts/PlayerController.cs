@@ -3,7 +3,7 @@
  * Date Created: Sept 13, 2021
  * 
  * Last Edited By:
- * Last Updated: Sept 13, 2021
+ * Last Updated: Sept 15, 2021
  * 
  * Description: Player control movements.
  * 
@@ -15,15 +15,47 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    /*** variables ***/
+    public bool MouseLook = true; // looking @ mouse?
+    public string HorzAxis = "Horizontal";
+    public string VertAxis = "Vertical";
+    public string FireAxis = "Fire1";
+    public float MaxSpeed = 5f; // speed
 
-    // Update is called once per frame
-    void Update()
+    private Rigidbody ThisBody = null; // for ship's rigidbody
+
+    private void Awake()
     {
-        
-    }
+        ThisBody = GetComponent<Rigidbody>(); // set's obj's rigidbody to variable    
+    } // end Awake()
+
+    private void FixedUpdate()
+    {
+        float Horz = Input.GetAxis(HorzAxis);
+        float Vert = Input.GetAxis(VertAxis);
+
+        Vector3 MoveDirection = new Vector3(Horz, 0.0f, Vert);
+        ThisBody.AddForce(MoveDirection.normalized * MaxSpeed);
+
+        ThisBody.velocity = new Vector3(Mathf.Clamp(ThisBody.velocity.x, -MaxSpeed, MaxSpeed), 
+            Mathf.Clamp(ThisBody.velocity.y, -MaxSpeed, MaxSpeed), Mathf.Clamp(ThisBody.velocity.z, 
+            -MaxSpeed, MaxSpeed));
+
+        // Look @ mouse
+        if (MouseLook)
+        {
+            Vector3 MousePosWorld = Camera.main.ScreenToWorldPoint(new Vector3
+                (Input.mousePosition.x, Input.mousePosition.y, 0.0f));
+            MousePosWorld = new Vector3(MousePosWorld.x, 0.0f, MousePosWorld.z);
+
+            Vector3 LookDirection = MousePosWorld - transform.position;
+
+            transform.localRotation = Quaternion.LookRotation(LookDirection.normalized,
+                Vector3.up);
+        }
+
+    } // end FixedUpdate()
+
+
+
 }
