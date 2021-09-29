@@ -3,7 +3,7 @@
  * Date Created: Sept 13, 2021
  * 
  * Last Edited By:
- * Last Updated: Sept 15, 2021
+ * Last Updated: Sept 27, 2021
  * 
  * Description: Player control movements.
  * 
@@ -21,6 +21,9 @@ public class PlayerController : MonoBehaviour
     public string VertAxis = "Vertical";
     public string FireAxis = "Fire1";
     public float MaxSpeed = 5f; // speed
+    public float ReloadDelay = 0.3f;
+    public bool CanFire = true;
+    public Transform[] TurretTransforms;
 
     private Rigidbody ThisBody = null; // for ship's rigidbody
 
@@ -54,7 +57,23 @@ public class PlayerController : MonoBehaviour
                 Vector3.up);
         }
 
+        if(Input.GetButtonDown(FireAxis) && CanFire)
+        {
+            foreach(Transform T in TurretTransforms)
+            {
+                AmmoManager.SpawnAmmo(T.position, T.rotation);
+            }
+
+            CanFire = false;
+            Invoke("Enable Fire", ReloadDelay);
+        }
+
     } // end FixedUpdate()
+
+    void EnableFire()
+    {
+        CanFire = true;
+    } // end EnableFire()
 
 
 
